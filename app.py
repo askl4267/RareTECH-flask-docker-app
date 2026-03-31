@@ -48,19 +48,36 @@ def init_table():
 
     return jsonify({"info": "テーブルの作成が完了しました"}), 200
 
-@app.route("/users", methods=["GET", "POST"])
+@app.route("/users", methods=["GET"])
 def get_users():
-    """ users テーブルからデータを取得する """
+    """ users テーブルから全データを取得する """
     conn = get_connection()
     try:
-        """ GET メソッドの場合、全データの一覧を取得する """
         if request.method == "GET":
             with conn.cursor() as cursor:
                 cursor.execute("SELECT * FROM users ORDER BY id")
                 users = cursor.fetchall()
             return jsonify(users)
+    finally:
+        conn.close()
 
-        """ POST　メソッドの場合、ボディに含まれるIDに一致するデータを取得する """
+@app.route("/users/<int:id>", methods=["GET"])
+def get_user(id):
+    """ 特定のIDのユーザー情報を取得する """
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE id = %s", (id,))
+            user = cursor.fetchone()
+        return jsonify(user)
+    finally:
+        conn.close()
+
+@app.route("/users", methods=["POST"])
+def add_user():
+    """ ユーザーのデータを追加する """
+    conn = get_connection()
+    try:
         data = request.get_json()
 
         if not data:
@@ -77,9 +94,27 @@ def get_users():
             conn.commit()
             name_id = cursor.lastrowid
 
-        return jsonify({"info": f"{clean_name}を追加しました。 idは、{name_id}です。"}), 201
+        return jsonify({"info": f"{clean_name}を追加しました。 idは、{name_id}です"}), 201
     finally:
         conn.close()
- 
+
+@app.route("/users/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    """ 特定のIDのユーザーを削除する """
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM users WHERE id = %s", (id,))
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                return jsonify({"error": f"id={id} のユーザーは存在しません"}), 404
+
+        return jsonify({"info": f"id={id} のユーザーを削除しました"}), 200
+    
+    finally:
+        conn.close()
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
