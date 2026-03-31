@@ -30,24 +30,6 @@ def display_db_version():
  
     return f"MySQL Version: {result}"
 
-@app.route("/init")
-def init_table():
-    """ users テーブルの初期化 """
-    conn = get_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    name VARCHAR(100) NOT NULL
-                )
-            """)
-        conn.commit()
-    finally:
-        conn.close()
-
-    return jsonify({"info": "テーブルの作成が完了しました"}), 200
-
 @app.route("/users", methods=["GET"])
 def get_users():
     """ users テーブルから全データを取得する """
