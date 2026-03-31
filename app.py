@@ -18,8 +18,8 @@ def hello():
     return "Hello Docker Flask + MySQL"
  
 @app.route("/db")
-def db_test():
- 
+def display_db_version():
+    """ SQLのバージョンを表示する """
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
@@ -30,9 +30,9 @@ def db_test():
  
     return f"MySQL Version: {result}"
 
-@app.route("/create")
-def create_table():
-
+@app.route("/init")
+def init_table():
+    """ users テーブルの初期化 """
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
@@ -49,16 +49,18 @@ def create_table():
     return jsonify({"info": "テーブルの作成が完了しました"}), 200
 
 @app.route("/users", methods=["GET", "POST"])
-def api_users():
-
+def get_users():
+    """ users テーブルからデータを取得する """
     conn = get_connection()
     try:
+        """ GET メソッドの場合、全データの一覧を取得する """
         if request.method == "GET":
             with conn.cursor() as cursor:
                 cursor.execute("SELECT * FROM users ORDER BY id")
                 users = cursor.fetchall()
             return jsonify(users)
 
+        """ POST　メソッドの場合、ボディに含まれるIDに一致するデータを取得する """
         data = request.get_json()
 
         if not data:
