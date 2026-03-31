@@ -60,12 +60,8 @@ def add_user():
     """ ユーザーのデータを追加する """
     conn = get_connection()
     try:
-        data = request.get_json()
+        name = request.form.get("name")
 
-        if not data:
-            return jsonify({"error": "リクエストボディが空です"}), 400
-
-        name = data.get("name")
         if not isinstance(name, str) or not name.strip():
             return jsonify({"error": "name は必須です"}), 400
 
