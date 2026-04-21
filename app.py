@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 import pymysql
  
 app = Flask(__name__)
@@ -92,6 +92,10 @@ def delete_user(id):
     
     finally:
         conn.close()
+
+@app.route("/users/new", methods=["GET"])
+def new_user_form():
+    return render_template("new_user.html")
 
 
 if __name__ == "__main__":
