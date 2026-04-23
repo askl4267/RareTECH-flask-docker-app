@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ユーザー一覧</title>
+  </head>
+  <body>
+    <h1>ユーザー一覧</h1>
+    <table border="1">
+      <tr>
+        <th>ID</th>
+        <th>名前</th>
+      </tr>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <p><a href="/users/new">ユーザーを追加する</a></p>
+  </body>
+</html>

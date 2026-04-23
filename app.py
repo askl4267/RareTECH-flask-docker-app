@@ -97,6 +97,25 @@ def delete_user(id):
 def new_user_form():
     return render_template("new_user.html")
 
+@app.route("/users/list", methods=["GET"])
+def user_list_page():
+    conn = pymysql.connect(
+        host="db",
+        user="flaskuser",
+        password="flaskpass",
+        database="flaskdb"
+    )
+
+    with conn.cursor() as cursor:
+        sql = "SELECT id, name FROM users"
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    
+    conn.close()
+
+    users = [{"id": row[0], "name": row[1]} for row in rows]
+
+    return render_template("user_list.html", users=users)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
